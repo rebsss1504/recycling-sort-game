@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycling Sort Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+        }
+        .game-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .box, .holding-box {
+            width: 150px;
+            height: 300px; /* Increased height to fit all items */
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            color: #fff;
+            position: relative;
+            overflow-y: auto; /* Allows scrolling if items overflow */
+        }
+        .holding-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 20px;
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        .draggable-item {
+            padding: 5px;
+            background-color: #fff;
+            border: 1px solid #666;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #333;
+        }
+        #recyclableBox {
+            background-color: #4CAF50; /* Green for recyclables */
+        }
+        #nonrecyclableBox {
+            background-color: #FF5722; /* Orange for non-recyclables */
+        }
+        #rejectedBox {
+            background-color: #9C27B0; /* Purple for rejected recyclables */
+        }
+        /* Ensure text remains visible in sorted boxes */
+        .sorted {
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #666;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Do You Know Your Recyclables?</h1>
+    <p>Drag each item to the correct box: Recyclables, Non-recyclables, or Rejected Recyclables.</p>
+
+    <div class="game-container">
+        <div class="holding-box" id="holdingBox">
+            <div class="draggable-item" draggable="true" id="recyclable1">Paper</div>
+            <div class="draggable-item" draggable="true" id="recyclable2">Plastic Bottle</div>
+            <div class="draggable-item" draggable="true" id="recyclable3">Glass</div>
+            <div class="draggable-item" draggable="true" id="nonrecyclable1">Styrofoam</div>
+            <div class="draggable-item" draggable="true" id="nonrecyclable2">Plastic Bag</div>
+            <div class="draggable-item" draggable="true" id="nonrecyclable3">Food Waste</div>
+            <div class="draggable-item" draggable="true" id="rejected1">Greasy Pizza Box</div>
+            <div class="draggable-item" draggable="true" id="rejected2">Broken Mirror</div>
+            <div class="draggable-item" draggable="true" id="rejected3">Ceramic Plate</div>
+        </div>
+
+        <div class="box" id="recyclableBox">Recyclables</div>
+        <div class="box" id="nonrecyclableBox">Non-recyclables</div>
+        <div class="box" id="rejectedBox">Rejected Recyclables</div>
+    </div>
+
+    <script>
+        // Define correct categories for each item
+        const correctCategories = {
+            recyclable1: 'recyclableBox',  // Paper
+            recyclable2: 'recyclableBox',  // Plastic Bottle
+            recyclable3: 'recyclableBox',  // Glass
+            nonrecyclable1: 'nonrecyclableBox',  // Styrofoam
+            nonrecyclable2: 'nonrecyclableBox',  // Plastic Bag
+            nonrecyclable3: 'nonrecyclableBox',  // Food Waste
+            rejected1: 'rejectedBox',  // Greasy Pizza Box
+            rejected2: 'rejectedBox',  // Broken Mirror
+            rejected3: 'rejectedBox'   // Ceramic Plate
+        };
+
+        // Shuffle items in the holding box
+        function shuffleItems() {
+            const holdingBox = document.getElementById('holdingBox');
+            const items = Array.from(holdingBox.children);
+            items.sort(() => Math.random() - 0.5); // Shuffle array
+            items.forEach(item => holdingBox.appendChild(item)); // Append in new order
+        }
+
+        // Add event listeners for drag-and-drop
+        document.querySelectorAll('.draggable-item').forEach(item => {
+            item.addEventListener('dragstart', dragStart);
+        });
+
+        document.querySelectorAll('.box').forEach(box => {
+            box.addEventListener('dragover', dragOver);
+            box.addEventListener('drop', drop);
+        });
+
+        function dragStart(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function dragOver(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const itemId = event.dataTransfer.getData("text");
+            const item = document.getElementById(itemId);
+            const boxId = event.target.id;
+
+            // Check if the item matches the box category
+            if (correctCategories[itemId] === boxId) {
+                event.target.appendChild(item);
+                item.classList.add("sorted");
+            } else {
+                alert("Incorrect category! Try again.");
+            }
+        }
+
+        // Shuffle items on page load
+        window.onload = shuffleItems;
+    </script>
+</body>
+</html>
